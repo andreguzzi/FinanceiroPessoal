@@ -63,6 +63,21 @@ app.get('/listar/:mes/:ano', async (req, res) => {
     });
 });
 
+app.get('/visualizar/:id', async (req, res) => {
+    await Lancamentos.findByPk(req.params.id).then(lancamento => {
+        return res.json({
+            erro: false,
+            lancamento
+        });
+    }).catch(function(){
+        return res.status(400).json({
+            erro: true,
+            mensagem: "Erro: Lançamento não encontrado"
+        });
+    });
+});
+
+
 app.post('/cadastrar', async (req, res) => {
     await Lancamentos.create(req.body).then(function(){
         return res.json({
@@ -76,6 +91,37 @@ app.post('/cadastrar', async (req, res) => {
         });
     });
 });
+
+app.put('/editar', async (req, res) => {
+    var dados = req.body;
+    await Lancamentos.update(dados, {where: {id: dados.id}}).then(function(){
+        return res.json({
+            erro: false,
+            mensagem: "Lançamento editado com sucesso!"
+        });
+    }).catch(function(){
+        return res.status(400).json({
+            erro: true,
+            mensagem: "Erro: Lançamento não editado com sucesso!"
+        });
+    });
+
+});
+
+app.delete("/apagar/:id", async (req, res) => {
+    await Lancamentos.destroy({where: {id: req.params.id}}).then(function(){
+        return res.json({
+            erro: false,
+            mensagem: "Lançamento apagado com sucesso!"
+        });
+    }).catch(function(){
+        return res.status(400).json({
+            erro: true,
+            mensagem: "Erro: Lançamento não apagado com sucesso!"
+        });
+    });
+})
+
 
 app.listen(8080, function(){
     console.log("servidor iniciado na porta 8080: http://localhost:8080");
